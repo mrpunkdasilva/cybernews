@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --neon-cyan: #00fff5;
+    --neon-pink: #ff00ff;
+    --dark-bg: #0a0a0a;
+  }
+
+  body {
+    @apply bg-cyber-black text-cyber-neon;
+  }
+}
+
+@layer components {
+  .cyber-button {
+    @apply px-8 py-3 bg-gradient-to-r from-cyber-neon to-cyber-pink 
+           text-black font-bold rounded-lg 
+           hover:from-cyber-neon/90 hover:to-cyber-pink/90 
+           transform hover:scale-105 transition-all;
+  }
+
+  .cyber-input {
+    @apply w-full px-6 py-3 bg-cyber-dark 
+           border border-cyber-neon rounded-lg 
+           focus:outline-none focus:border-cyber-pink 
+           text-white;
+  }
+
+  .cyber-card {
+    @apply p-6 border border-cyber-neon rounded-lg 
+           bg-cyber-black/50 hover:bg-cyber-black/70 
+           transition-all;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px var(--neon-cyan);
+  }
+
+  .grid-bg {
+    @apply bg-cyber-grid bg-grid opacity-20;
+  }
+}
