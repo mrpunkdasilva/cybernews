@@ -6,50 +6,71 @@ import { useState } from 'react';
 export default function Home() {
   const [email, setEmail] = useState('');
 
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  };
-
   return (
-    <main className="min-h-screen bg-cyber-black text-cyber-neon">
+    <main className="min-h-screen bg-cyber-black text-cyber-neon relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-scanline opacity-5 pointer-events-none"></div>
+      <div className="absolute inset-0 perspective-1000">
+        <div className="absolute inset-0 preserve-3d rotate3d">
+          <div className="cyber-grid-background"></div>
+        </div>
+      </div>
+      
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-b from-cyber-black to-cyber-dark">
-        <div className="absolute inset-0 grid-bg animate-grid-pulse"></div>
-        <div className="container mx-auto px-4 text-center z-10">
-          <motion.h1 
-            {...fadeIn}
-            className="text-6xl md:text-8xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon to-cyber-purple animate-text-gradient"
+      <section className="relative min-h-screen flex items-center justify-center">
+        <div className="container mx-auto px-4 py-20 text-center z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-12"
           >
-            CYBER<span className="text-cyber-pink">NEWS</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 text-gray-300"
-          >
-            Stay ahead in tech with AI-powered news curation
-          </motion.p>
-          <motion.div 
-            className="flex flex-col md:flex-row gap-4 justify-center items-center max-w-md mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="cyber-input"
-            />
-            <motion.button 
-              className="cyber-button animate-glow"
+            <motion.h1 
+              className="text-6xl md:text-8xl font-orbitron mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-cyber-pink to-cyber-purple animate-text-gradient"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                duration: 0.5,
+                type: "spring",
+                stiffness: 200
+              }}
             >
-              GET EARLY ACCESS
-            </motion.button>
+              CYBER<span className="text-cyber-pink animate-flicker">NEWS</span>
+            </motion.h1>
+
+            <motion.p 
+              className="text-xl md:text-2xl mb-8 font-rajdhani text-gray-300"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Stay ahead in tech with AI-powered news curation
+            </motion.p>
+
+            <motion.div 
+              className="flex flex-col md:flex-row gap-6 justify-center items-center max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="cyber-input terminal-text text-lg"
+              />
+              <motion.button 
+                className="cyber-button animate-glow"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 0 25px rgba(0,255,245,0.5)"
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                GET EARLY ACCESS
+              </motion.button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
