@@ -18,6 +18,78 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-orbitron font-bold;
   }
+
+  /* Estilo para seleção de texto */
+  ::selection {
+    background: theme('colors.cyber.pink');
+    color: theme('colors.cyber.black');
+    text-shadow: none;
+  }
+  
+  ::-moz-selection {
+    background: theme('colors.cyber.pink');
+    color: theme('colors.cyber.black');
+    text-shadow: none;
+  }
+
+  /* Estilização da Scrollbar - Webkit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 12px;
+    background: theme('colors.cyber.black');
+  }
+
+  ::-webkit-scrollbar-track {
+    background: linear-gradient(
+      to right,
+      theme('colors.cyber.black'),
+      theme('colors.cyber.dark')
+    );
+    border-left: 1px solid theme('colors.cyber.neon/30');
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      theme('colors.cyber.neon'),
+      theme('colors.cyber.pink')
+    );
+    border-radius: 6px;
+    border: 3px solid theme('colors.cyber.black');
+    transition: all 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      theme('colors.cyber.pink'),
+      theme('colors.cyber.purple')
+    );
+    border: 2px solid theme('colors.cyber.black');
+  }
+
+  /* Estilização da Scrollbar - Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.cyber.neon') theme('colors.cyber.black');
+  }
+
+  /* Estilo para texto selecionado em inputs */
+  input::selection,
+  textarea::selection {
+    background: theme('colors.cyber.neon');
+    color: theme('colors.cyber.black');
+    text-shadow: none;
+  }
+
+  /* Estilo para placeholder */
+  ::placeholder {
+    color: theme('colors.cyber.neon/40');
+    transition: color 0.3s ease;
+  }
+
+  :focus::placeholder {
+    color: theme('colors.cyber.pink/40');
+  }
 }
 
 @layer components {
@@ -129,5 +201,39 @@
     100% {
       transform: rotateX(60deg) rotateZ(360deg);
     }
+  }
+
+  .cyber-glow {
+    box-shadow: 0 0 10px rgba(0, 255, 245, 0.3),
+                0 0 20px rgba(0, 255, 245, 0.2),
+                0 0 30px rgba(0, 255, 245, 0.1);
+  }
+
+  .cyber-text-glow {
+    text-shadow: 0 0 10px rgba(0, 255, 245, 0.5),
+                 0 0 20px rgba(0, 255, 245, 0.3),
+                 0 0 30px rgba(0, 255, 245, 0.2);
+  }
+
+  .scrollbar-cyber {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.cyber.neon') theme('colors.cyber.black');
+  }
+
+  .scrollbar-cyber::-webkit-scrollbar-track {
+    animation: scrollPulse 4s ease infinite;
+  }
+}
+
+/* Opcional: Animação de pulse na scrollbar */
+@keyframes scrollPulse {
+  0% {
+    border-color: theme('colors.cyber.neon/30');
+  }
+  50% {
+    border-color: theme('colors.cyber.pink/50');
+  }
+  100% {
+    border-color: theme('colors.cyber.neon/30');
   }
 }

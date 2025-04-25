@@ -25,6 +25,21 @@ module.exports = {
         }
       },
       backgroundImage: {
+        'cyber-city': "linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)), url('/images/cyber-city.jpg')",
+        'cyber-pattern': `
+          linear-gradient(rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9)),
+          repeating-linear-gradient(
+            45deg,
+            var(--cyber-grid) 0px,
+            var(--cyber-grid) 2px,
+            transparent 2px,
+            transparent 10px
+          )
+        `,
+        'cyber-rays': `
+          linear-gradient(rgba(0, 255, 245, 0.1) -50%, transparent 90%),
+          radial-gradient(circle at 50% 50%, rgba(255, 0, 255, 0.1), transparent 70%)
+        `,
         'grid': `
           linear-gradient(to right, var(--cyber-grid) 2px, transparent 2px),
           linear-gradient(to bottom, var(--cyber-grid) 2px, transparent 2px),
@@ -46,6 +61,8 @@ module.exports = {
         'flicker': 'flicker 0.5s ease-in-out infinite alternate',
         'float': 'float 6s ease-in-out infinite',
         'grid-flow': 'grid-flow 20s linear infinite',
+        'cyber-pulse': 'cyber-pulse 4s ease-in-out infinite',
+        'cyber-float': 'cyber-float 6s ease-in-out infinite',
       },
       keyframes: {
         'text-gradient': {
@@ -81,6 +98,14 @@ module.exports = {
         'grid-flow': {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(100%)' },
+        },
+        'cyber-pulse': {
+          '0%, 100%': { opacity: 0.8 },
+          '50%': { opacity: 0.4 },
+        },
+        'cyber-float': {
+          '0%, 100%': { transform: 'translateY(0) scale(1)' },
+          '50%': { transform: 'translateY(-20px) scale(1.05)' },
         },
       },
     },
