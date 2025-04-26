@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useStories } from '@/hooks/useStories';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
@@ -11,7 +11,9 @@ import { SearchBar } from '@/components/search/SearchBar';
 import type { Story } from '@/services/hackerNewsAPI';
 
 export default function HomePage() {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { 
     stories, 
     loading, 
@@ -21,6 +23,32 @@ export default function HomePage() {
     lastStoryRef,
     fetchStories 
   } = useStories('top');
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignora se estiver em um input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === '/' && !isSearchFocused) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsSearchFocused(true);
+      } else if (e.key === 'Escape') {
+        if (isSearchFocused) {
+          searchInputRef.current?.blur();
+          if (searchInputRef.current) {
+            searchInputRef.current.value = '';
+          }
+          setIsSearchFocused(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isSearchFocused]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -95,7 +123,12 @@ export default function HomePage() {
         <TerminalWindow>
           {/* Search Bar */}
           <div className="mb-6">
-            <SearchBar onResultSelect={handleSearchResultSelect} />
+            <SearchBar 
+              ref={searchInputRef}
+              onResultSelect={handleSearchResultSelect}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+            />
           </div>
 
           {error && (
