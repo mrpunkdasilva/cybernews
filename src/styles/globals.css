@@ -45,3 +45,75 @@
     @apply bg-cyber-grid bg-grid opacity-20;
   }
 }
+
+/* Estilos para o modo hacker */
+.hacker-mode {
+  --cyber-neon: #0f0;
+  --cyber-dark: #000;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  background-color: var(--cyber-dark);
+  color: var(--cyber-neon);
+  transition: all 0.3s ease;
+}
+
+.hacker-mode * {
+  color: var(--cyber-neon);
+  border-color: var(--cyber-neon);
+}
+
+.hacker-mode input,
+.hacker-mode button {
+  background-color: var(--cyber-dark);
+  border-color: var(--cyber-neon);
+}
+
+/* Efeito de terminal */
+.hacker-mode {
+  position: relative;
+  min-height: 100vh;
+}
+
+.hacker-mode::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 0, 0.15) 1px,
+    transparent 2px,
+    transparent 3px
+  );
+  pointer-events: none;
+  animation: scan 0.5s linear infinite;
+}
+
+@keyframes scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(3px); }
+}
+
+/* Efeito de sombra neon */
+.shadow-neon {
+  box-shadow: 0 0 10px var(--cyber-neon);
+}
+
+/* Animação para o modo hacker */
+@keyframes terminal-flicker {
+  0% { opacity: 0.9; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
+}
+
+.hacker-mode {
+  animation: terminal-flicker 0.1s infinite;
+}
+
+/* Estilos para os atalhos de teclado */
+kbd {
+  font-family: monospace;
+  font-size: 0.9em;
+  line-height: 1;
+}

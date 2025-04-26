@@ -1,6 +1,7 @@
-import '../app/globals.css'
-import type { Metadata } from 'next'
-import { Orbitron, Share_Tech_Mono, Rajdhani } from 'next/font/google'
+import '../app/globals.css';
+import type { Metadata } from 'next';
+import { Orbitron, Share_Tech_Mono, Rajdhani } from 'next/font/google';
+import { ClientLayout } from '@/components/layout/ClientLayout';
 
 const orbitron = Orbitron({ 
   subsets: ['latin'],
@@ -45,12 +46,15 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" className={`${orbitron.variable} ${shareTechMono.variable} ${rajdhani.variable}`}>
-      <head />
-      <body>{children}</body>
+      <body>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+      </body>
     </html>
-  )
+  );
 }

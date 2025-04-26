@@ -3,11 +3,13 @@
 import { CyberPunkBackground } from '../effects/CyberPunkBackground';
 import { Navigation } from './Navigation';
 import { Footer } from './Footer';
+import {CRTEffect} from "@/components/terminal/CRTEffect";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-cyber-black relative overflow-hidden">
-      <div className="relative z-20">
+       <CRTEffect />
+        <div className="relative z-20">
         <Navigation />
       </div>
       

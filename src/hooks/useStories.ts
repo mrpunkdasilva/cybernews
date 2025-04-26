@@ -1,44 +1,93 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Story } from '@/services/types/HackerNews';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { Story, StoryType } from '@/services/types/HackerNews';
 import { hackerNewsAPI } from '@/services/hackerNewsAPI';
 
-type StoryType = 'top' | 'new' | 'best' | 'show' | 'ask';
+interface StoriesState {
+  stories: Story[];
+  loading: boolean;
+  error: string | null;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+}
 
-export function useStories(type: StoryType) {
-  const [stories, setStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+export interface StoriesHook {
+  stories: Story[];
+  loading: boolean;
+  error: string | null;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+  refreshStories: () => Promise<void>;
+  loadMore: () => void;
+  lastStoryRef: React.RefObject<HTMLDivElement>;
+  fetchStories: (pageNum: number, forceRefresh?: boolean) => Promise<void>;
+}
 
-  const fetchStories = useCallback(async () => {
+const INITIAL_STATE: StoriesState = {
+  stories: [],
+  loading: true,
+  error: null,
+  hasMore: true,
+  isLoadingMore: false,
+};
+
+const PAGE_SIZE = 20;
+
+export function useStories(type: StoryType): StoriesHook {
+  const [state, setState] = useState<StoriesState>(INITIAL_STATE);
+  const [page, setPage] = useState(1);
+  const lastStoryRef = useRef<HTMLDivElement>(null);
+  const retryCount = useRef(0);
+
+  const fetchStories = useCallback(async (pageNum: number, forceRefresh: boolean = false) => {
     try {
-      setLoading(true);
-      setError(null);
-      const fetchedStories = await hackerNewsAPI.getStories(type);
-      setStories(fetchedStories);
+      setState(prev => ({ ...prev, loading: pageNum === 1, isLoadingMore: pageNum > 1 }));
+      
+      if (forceRefresh) {
+        hackerNewsAPI.clearCache();
+      }
+      
+      const fetchedStories = await hackerNewsAPI.getStories(type, pageNum, PAGE_SIZE);
+      
+      setState(prev => ({
+        ...prev,
+        stories: pageNum === 1 ? fetchedStories : [...prev.stories, ...fetchedStories],
+        loading: false,
+        error: null,
+        hasMore: fetchedStories.length === PAGE_SIZE,
+        isLoadingMore: false,
+      }));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch stories';
-      setError(errorMessage);
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        isLoadingMore: false,
+        error: errorMessage,
+      }));
       console.error('Error fetching stories:', err);
-    } finally {
-      setLoading(false);
     }
   }, [type]);
 
+  const loadMore = useCallback(() => {
+    if (!state.hasMore || state.isLoadingMore) return;
+    setPage(prev => prev + 1);
+  }, [state.hasMore, state.isLoadingMore]);
+
   const refreshStories = useCallback(() => {
-    setRetryCount(count => count + 1);
-    hackerNewsAPI.clearCache(); // Clear cache on manual refresh
-    fetchStories();
+    retryCount.current += 1;
+    setPage(1);
+    return fetchStories(1, true);
   }, [fetchStories]);
 
   useEffect(() => {
-    fetchStories();
-  }, [fetchStories, retryCount]);
+    fetchStories(page);
+  }, [fetchStories, page]);
 
   return {
-    stories,
-    loading,
-    error,
-    refreshStories
+    ...state,
+    refreshStories,
+    loadMore,
+    lastStoryRef,
+    fetchStories,
   };
 }

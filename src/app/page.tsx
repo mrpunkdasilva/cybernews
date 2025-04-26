@@ -3,12 +3,11 @@
 import { motion } from 'framer-motion';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useStories } from '@/hooks/useStories';
+import type { Story } from '@/services/types/HackerNews';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
-import { CRTEffect } from '@/components/terminal/CRTEffect';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/SearchBar';
-import type { Story } from '@/services/hackerNewsAPI';
 
 export default function HomePage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +20,9 @@ export default function HomePage() {
     hasMore, 
     isLoadingMore, 
     lastStoryRef,
-    fetchStories 
+    refreshStories,
+    fetchStories,
+    loadMore
   } = useStories('top');
 
   useEffect(() => {
@@ -53,11 +54,11 @@ export default function HomePage() {
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      await fetchStories(1, true); // true para forçar refresh
+      await refreshStories();
     } finally {
       setIsRefreshing(false);
     }
-  }, [fetchStories]);
+  }, [refreshStories]);
 
   const handleSearchResultSelect = useCallback((story: Story) => {
     // Opcional: adicionar lógica adicional ao selecionar um resultado

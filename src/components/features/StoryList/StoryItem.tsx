@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { Story } from '@/services/types/HackerNews';
 import { parseUrl } from '@/utils/url';
 
-interface StoryItemProps {
+export interface StoryItemProps {
   story: Story;
   index: number;
 }

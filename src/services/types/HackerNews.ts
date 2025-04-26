@@ -1,4 +1,5 @@
-export type StoryType = 'top' | 'new' | 'best' | 'ask' | 'show' | 'job';
+export type ItemType = 'story' | 'job' | 'poll' | 'pollopt' | 'comment';
+export type StoryType = 'top' | 'new' | 'best' | 'show' | 'ask';
 
 export interface Story {
   id: number;
@@ -8,23 +9,18 @@ export interface Story {
   by: string;
   time: number;
   descendants: number;
-  type: 'story' | 'job' | 'comment' | 'poll' | 'pollopt';
+  kids?: number[];
+  type: ItemType;
 }
 
 export interface SearchResult {
-  hits: Array<{
+  hits: {
     objectID: string;
     title: string;
-    url: string;
+    url?: string;
     points: number;
     author: string;
     created_at_i: number;
     num_comments: number;
-    type: string;
-  }>;
-  nbHits: number;
-  page: number;
-  nbPages: number;
-  hitsPerPage: number;
-  processingTimeMS: number;
+  }[];
 }

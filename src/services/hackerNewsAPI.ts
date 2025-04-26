@@ -2,12 +2,15 @@ import { CacheManager } from './cache/CacheManager';
 import { HttpClient } from './api/HttpClient';
 import type { Story, StoryType, SearchResult } from './types/HackerNews';
 
+// Re-export types
+export type { Story, StoryType, SearchResult };
+
 class HackerNewsAPI {
   private cache: CacheManager;
   private client: HttpClient;
   private algoliaClient: HttpClient;
   private maxRetries = 3;
-  private retryDelay = 1000; // 1 second
+  private retryDelay = 1000;
 
   constructor() {
     this.cache = CacheManager.getInstance();
