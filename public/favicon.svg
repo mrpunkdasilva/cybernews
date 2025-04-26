@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <style>
+    .terminal-symbol {
+      fill: none;
+      stroke: #00fff5;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @media (prefers-color-scheme: light) {
+      .terminal-symbol {
+        stroke: #1a1a1a;
+      }
+    }
+  </style>
+  <rect width="32" height="32" rx="6" fill="#0a0a0a"/>
+  <path 
+    class="terminal-symbol" 
+    d="M10,12 L16,16 L10,20 M18,20 L22,20"
+  />
+  <path 
+    class="terminal-symbol" 
+    d="M8,8 L24,8 L24,24 L8,24 L8,8" 
+    stroke-opacity="0.3"
+  />
+</svg>
