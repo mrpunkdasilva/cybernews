@@ -5,6 +5,7 @@ import { useStories } from '@/hooks/useStories';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
 import { CRTEffect } from '@/components/terminal/CRTEffect';
+import Link from 'next/link';
 
 export default function HomePage() {
   const { stories, loading, error, loadMore } = useStories('top');
@@ -45,16 +46,26 @@ export default function HomePage() {
                   <div className="flex items-start">
                     <span className="text-cyber-pink mr-2">&gt;</span>
                     <div>
-                      <a 
-                        href={story.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link 
+                        href={`/show/${story.id}`}
                         className="block group-hover:text-cyber-pink transition-colors"
                       >
                         {story.title}
-                      </a>
+                      </Link>
                       <div className="text-sm text-cyber-neon/50">
                         {story.score} points | by {story.by} | {story.descendants} comments
+                        {story.url && (
+                          <>
+                            {' '}| <a 
+                              href={story.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-cyber-pink hover:underline"
+                            >
+                              Visit Link
+                            </a>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
