@@ -15,7 +15,11 @@ export default function HomePage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleSearchResultSelect = (story: Story) => {
-    window.location.href = story.url || `/show/${story.id}`;
+    // Se a história tem uma URL externa, abrimos em nova aba
+    if (story.url) {
+      window.open(story.url, '_blank', 'noopener,noreferrer');
+    }
+    // A navegação interna é tratada pelo Link component
   };
 
   // Pull-to-refresh functionality

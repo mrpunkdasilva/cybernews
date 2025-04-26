@@ -1,13 +1,21 @@
 import { motion } from 'framer-motion';
 import { useSearch } from '@/hooks/useSearch';
 import type { Story } from '@/services/hackerNewsAPI';
+import Link from 'next/link';
 
 interface SearchBarProps {
-  onResultSelect: (story: Story) => void;
+  onResultSelect?: (story: Story) => void;
 }
 
 export function SearchBar({ onResultSelect }: SearchBarProps) {
   const { searchTerm, setSearchTerm, results, isSearching, error } = useSearch();
+
+  const handleResultClick = (story: Story) => {
+    if (onResultSelect) {
+      onResultSelect(story);
+    }
+    setSearchTerm('');
+  };
 
   return (
     <div className="relative">
@@ -43,16 +51,22 @@ export function SearchBar({ onResultSelect }: SearchBarProps) {
           ) : (
             <div className="divide-y divide-cyber-neon/10">
               {results.map((story) => (
-                <button
+                <Link
                   key={story.id}
-                  onClick={() => onResultSelect(story)}
-                  className="w-full text-left p-4 hover:bg-cyber-neon/10 transition-colors"
+                  href={`/show/${story.id}`}
+                  onClick={() => handleResultClick(story)}
+                  className="block w-full text-left p-4 hover:bg-cyber-neon/10"
                 >
                   <h3 className="text-cyber-neon font-medium">{story.title}</h3>
-                  <div className="text-sm text-cyber-neon/50 mt-1">
-                    {story.score} points | by {story.by}
+                  <div className="text-sm text-cyber-neon/50 mt-1 flex items-center space-x-4">
+                    <span>{story.score} points</span>
+                    <span>by {story.by}</span>
+                    <span>{story.descendants} comments</span>
+                    {story.url && (
+                      <span className="text-cyber-pink">has external link ↗</span>
+                    )}
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           )}
