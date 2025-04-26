@@ -7,10 +7,16 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
 import { CRTEffect } from '@/components/terminal/CRTEffect';
 import Link from 'next/link';
+import { SearchBar } from '@/components/search/SearchBar';
+import type { Story } from '@/services/hackerNewsAPI';
 
 export default function HomePage() {
   const { stories, loading, error, loadMore } = useStories('top');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleSearchResultSelect = (story: Story) => {
+    window.location.href = story.url || `/show/${story.id}`;
+  };
 
   // Pull-to-refresh functionality
   const handleRefresh = async () => {
@@ -80,14 +86,7 @@ export default function HomePage() {
         <TerminalWindow>
           {/* Search Bar */}
           <div className="mb-6">
-            <div className="flex items-center space-x-2 border border-cyber-neon/30 p-2">
-              <span className="text-cyber-pink">&gt;</span>
-              <input
-                type="text"
-                placeholder="SEARCH_ARTICLES.exe"
-                className="bg-transparent border-none outline-none w-full text-cyber-neon placeholder-cyber-neon/30"
-              />
-            </div>
+            <SearchBar onResultSelect={handleSearchResultSelect} />
           </div>
 
           {error && (
