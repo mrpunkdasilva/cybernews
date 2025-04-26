@@ -5,12 +5,29 @@ import type { Story, StoryType, SearchResult } from './types/HackerNews';
 class HackerNewsAPI {
   private cache: CacheManager;
   private client: HttpClient;
-  private searchClient: HttpClient;
+  private algoliaClient: HttpClient;
+  private maxRetries = 3;
+  private retryDelay = 1000; // 1 second
 
   constructor() {
     this.cache = CacheManager.getInstance();
     this.client = new HttpClient('https://hacker-news.firebaseio.com/v0');
-    this.searchClient = new HttpClient('https://hn.algolia.com/api/v1');
+    this.algoliaClient = new HttpClient('https://hn.algolia.com/api/v1');
+  }
+
+  private async fetchWithRetry<T>(
+    fn: () => Promise<T>,
+    retries = this.maxRetries
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+        return this.fetchWithRetry(fn, retries - 1);
+      }
+      throw error;
+    }
   }
 
   private async fetchStoryById(id: number): Promise<Story | null> {
@@ -22,7 +39,12 @@ class HackerNewsAPI {
     }
 
     try {
-      const story = await this.client.get<Story>(`/item/${id}.json`);
+      const story = await this.fetchWithRetry(() => 
+        this.client.get<Story>(`/item/${id}.json`)
+      );
+      
+      if (!story) return null;
+      
       this.cache.set(storyCacheKey, story);
       return story;
     } catch (error) {
@@ -40,7 +62,14 @@ class HackerNewsAPI {
         return cachedStories;
       }
 
-      const storyIds = await this.client.get<number[]>(`/${type}stories.json`);
+      const storyIds = await this.fetchWithRetry(() => 
+        this.client.get<number[]>(`/${type}stories.json`)
+      );
+
+      if (!storyIds || !storyIds.length) {
+        throw new Error('No stories available');
+      }
+
       const start = (page - 1) * limit;
       const end = start + limit;
       const pageStoryIds = storyIds.slice(start, end);
@@ -50,20 +79,42 @@ class HackerNewsAPI {
       );
 
       const validStories = stories.filter((story): story is Story => story !== null);
-      this.cache.set(cacheKey, validStories);
       
+      if (validStories.length === 0) {
+        throw new Error('Failed to fetch any valid stories');
+      }
+
+      this.cache.set(cacheKey, validStories);
       return validStories;
     } catch (error) {
-      console.error('Error fetching stories:', error);
-      return [];
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      throw new Error(`Failed to fetch ${type} stories: ${errorMessage}`);
     }
   }
 
+  clearCache(): void {
+    this.cache.clear();
+  }
+
   async searchStories(query: string): Promise<Story[]> {
+    const cacheKey = `search_${query}`;
+    const cachedResults = this.cache.get<Story[]>(cacheKey);
+    
+    if (cachedResults) {
+      return cachedResults;
+    }
+
     try {
-      const result = await this.searchClient.get<SearchResult>(`/search?query=${encodeURIComponent(query)}`);
-      
-      return result.hits.map(hit => ({
+      const searchResult = await this.fetchWithRetry(() =>
+        this.algoliaClient.get<SearchResult>(`/search?query=${encodeURIComponent(query)}`)
+      );
+
+      if (!searchResult || !searchResult.hits) {
+        throw new Error('No search results available');
+      }
+
+      // Converter os resultados do Algolia para o formato Story
+      const stories: Story[] = searchResult.hits.map(hit => ({
         id: parseInt(hit.objectID),
         title: hit.title,
         url: hit.url,
@@ -71,16 +122,15 @@ class HackerNewsAPI {
         by: hit.author,
         time: hit.created_at_i,
         descendants: hit.num_comments,
-        type: hit.type,
+        type: 'story'
       }));
-    } catch (error) {
-      console.error('Error searching stories:', error);
-      return [];
-    }
-  }
 
-  clearCache(): void {
-    this.cache.clear();
+      this.cache.set(cacheKey, stories);
+      return stories;
+    } catch (error) {
+      console.error('Search failed:', error);
+      throw new Error('Failed to perform search');
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { hackerNewsAPI } from '@/services/hackerNewsAPI';
-import type { Story } from '@/services/hackerNewsAPI';
+import type { Story } from '@/services/types/HackerNews';
 import { useDebounce } from './useDebounce';
 
 interface SearchState {

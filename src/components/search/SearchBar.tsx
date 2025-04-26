@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useSearch } from '@/hooks/useSearch';
-import type { Story } from '@/services/hackerNewsAPI';
+import type { Story } from '@/services/types/HackerNews';
 import Link from 'next/link';
 import { forwardRef } from 'react';
 
@@ -62,7 +62,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
                     key={story.id}
                     href={`/show/${story.id}`}
                     onClick={() => handleResultClick(story)}
-                    className="block w-full text-left p-4 hover:bg-cyber-neon/10"
+                    className="block w-full text-left p-4 hover:bg-cyber-neon/10 group"
                   >
                     <h3 className="text-cyber-neon font-medium">{story.title}</h3>
                     <div className="text-sm text-cyber-neon/50 mt-1 flex items-center space-x-4">
@@ -70,7 +70,15 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
                       <span>by {story.by}</span>
                       <span>{story.descendants} comments</span>
                       {story.url && (
-                        <span className="text-cyber-pink">has external link ↗</span>
+                        <a
+                          href={story.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-cyber-pink hover:text-cyber-pink-bright"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          external link ↗
+                        </a>
                       )}
                     </div>
                   </Link>

@@ -3,12 +3,12 @@ export type StoryType = 'top' | 'new' | 'best' | 'ask' | 'show' | 'job';
 export interface Story {
   id: number;
   title: string;
-  url: string;
+  url?: string;
   score: number;
   by: string;
   time: number;
   descendants: number;
-  type: string;
+  type: 'story' | 'job' | 'comment' | 'poll' | 'pollopt';
 }
 
 export interface SearchResult {
@@ -22,4 +22,9 @@ export interface SearchResult {
     num_comments: number;
     type: string;
   }>;
+  nbHits: number;
+  page: number;
+  nbPages: number;
+  hitsPerPage: number;
+  processingTimeMS: number;
 }
