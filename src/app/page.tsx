@@ -6,6 +6,7 @@ import { useStories } from '@/hooks/useStories';
 import type { Story } from '@/services/types/HackerNews';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
+import { LoadingTerminal } from '@/components/effects/LoadingTerminal';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/SearchBar';
 
@@ -64,6 +65,34 @@ export default function HomePage() {
     // Opcional: adicionar lógica adicional ao selecionar um resultado
     console.log('Selected story:', story);
   }, []);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <LoadingTerminal message="INITIALIZING CYBERNEWS TERMINAL..." />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="text-cyber-red">
+          <LoadingTerminal message="ERROR: SYSTEM MALFUNCTION" />
+          <div className="mt-4 text-center">
+            <button 
+              onClick={() => refreshStories()} 
+              className="text-cyber-neon hover:text-cyber-pink transition-colors"
+            >
+              RETRY_CONNECTION();
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -177,15 +206,8 @@ export default function HomePage() {
             ))}
             
             {isLoadingMore && (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <motion.div 
-                    key={i} 
-                    className="h-20 bg-cyber-neon/5 animate-pulse rounded"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  />
-                ))}
+              <div className="mt-4">
+                <LoadingTerminal message="FETCHING MORE DATA..." />
               </div>
             )}
             

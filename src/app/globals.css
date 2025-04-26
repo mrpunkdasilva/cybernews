@@ -439,3 +439,23 @@
   text-shadow: 2px 0 #00fff5;
   animation: glitch 0.75s infinite linear alternate;
 }
+
+/* Adicione isso junto com seus outros estilos */
+.bg-cyber-black {
+  background-color: #0a0a0f;
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Ajuste a opacidade do fundo para melhor visibilidade do efeito matrix */
+.bg-cyber-black\/30 {
+  background-color: rgba(10, 10, 15, 0.3);
+}
+
+/* Melhore a visibilidade do texto sobre o background */
+.text-cyber-neon {
+  color: #00fff5;
+  text-shadow: 0 0 5px rgba(0, 255, 245, 0.5);
+}
