@@ -1,16 +1,17 @@
 import { CacheManager } from './cache/CacheManager';
 import { HttpClient } from './api/HttpClient';
-import type { Story, StoryType, SearchResult } from './types/HackerNews';
+import type { Story, StoryType, SearchResult, ItemType } from './types/HackerNews';
 
 // Re-export types
-export type { Story, StoryType, SearchResult };
+export type { Story, StoryType, SearchResult, ItemType };
 
-class HackerNewsAPI {
-  private cache: CacheManager;
-  private client: HttpClient;
-  private algoliaClient: HttpClient;
-  private maxRetries = 3;
-  private retryDelay = 1000;
+export class HackerNewsAPI {
+  private readonly cache: CacheManager;
+  private readonly client: HttpClient;
+  private readonly algoliaClient: HttpClient;
+  private readonly storyTTL = 5 * 60 * 1000;    // 5 minutes
+  private readonly listingTTL = 2 * 60 * 1000;  // 2 minutes
+  private readonly searchTTL = 2 * 60 * 1000;   // 2 minutes
 
   constructor() {
     this.cache = CacheManager.getInstance();
@@ -20,59 +21,38 @@ class HackerNewsAPI {
 
   private async fetchWithRetry<T>(
     fn: () => Promise<T>,
-    retries = this.maxRetries
+    retries: number = 3
   ): Promise<T> {
-    try {
-      return await fn();
-    } catch (error) {
-      if (retries > 0) {
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-        return this.fetchWithRetry(fn, retries - 1);
-      }
-      throw error;
-    }
-  }
-
-  private async fetchStoryById(id: number): Promise<Story | null> {
-    const storyCacheKey = `story_${id}`;
-    const cachedStory = this.cache.get<Story>(storyCacheKey);
+    let lastError: Error | null = null;
     
-    if (cachedStory) {
-      return cachedStory;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        if (i === retries - 1) break;
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+      }
     }
-
-    try {
-      const story = await this.fetchWithRetry(() => 
-        this.client.get<Story>(`/item/${id}.json`)
-      );
-      
-      if (!story) return null;
-      
-      this.cache.set(storyCacheKey, story);
-      return story;
-    } catch (error) {
-      console.error(`Failed to fetch story ${id}:`, error);
-      return null;
-    }
+    
+    throw lastError || new Error('Failed after multiple retries');
   }
 
-  async getStories(type: StoryType = 'top', page: number = 1, limit: number = 30): Promise<Story[]> {
-    const cacheKey = `listing_${type}_${page}_${limit}`;
+  async getStories(type: StoryType = 'top', page: number = 1): Promise<Story[]> {
+    const limit = 20;
+    const cacheKey = `listing_${type}_${page}`;
     
     try {
       const cachedStories = this.cache.get<Story[]>(cacheKey);
       if (cachedStories) {
-        return cachedStories.map(story => ({
-          ...story,
-          type: story.type || 'story'
-        }));
+        return cachedStories;
       }
 
       const storyIds = await this.fetchWithRetry(() => 
         this.client.get<number[]>(`/${type}stories.json`)
       );
 
-      if (!storyIds || !storyIds.length) {
+      if (!storyIds?.length) {
         throw new Error('No stories available');
       }
 
@@ -80,22 +60,72 @@ class HackerNewsAPI {
       const end = start + limit;
       const pageStoryIds = storyIds.slice(start, end);
 
-      const stories = await Promise.all(
-        pageStoryIds.map(id => this.fetchStoryById(id))
-      );
-
-      const validStories = stories.filter((story): story is Story => story !== null);
+      const stories = await this.fetchStoriesInBatches(pageStoryIds);
       
-      if (validStories.length === 0) {
+      if (stories.length === 0) {
         throw new Error('Failed to fetch any valid stories');
       }
 
-      this.cache.set(cacheKey, validStories);
-      return validStories;
+      const sortedStories = stories.sort((a, b) => (b.score || 0) - (a.score || 0));
+      this.cache.set(cacheKey, sortedStories, { ttl: this.listingTTL });
+      
+      return sortedStories;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to fetch ${type} stories: ${errorMessage}`);
     }
+  }
+
+  private async fetchStoriesInBatches(storyIds: number[]): Promise<Story[]> {
+    const stories: Story[] = [];
+    const batchSize = 5;
+    
+    for (let i = 0; i < storyIds.length; i += batchSize) {
+      const batch = storyIds.slice(i, i + batchSize);
+      const batchStories = await Promise.all(
+        batch.map(id => this.getStory(id))
+      );
+      
+      stories.push(...batchStories.filter((story): story is Story => story !== null));
+    }
+    
+    return stories;
+  }
+
+  async getStory(id: number): Promise<Story | null> {
+    const cacheKey = `story_${id}`;
+    
+    try {
+      const cachedStory = this.cache.get<Story>(cacheKey);
+      if (cachedStory) {
+        return cachedStory;
+      }
+
+      const item = await this.fetchWithRetry(() =>
+        this.client.get<Story>(`/item/${id}.json`)
+      );
+
+      if (!item || !this.isValidStory(item)) {
+        return null;
+      }
+
+      this.cache.set(cacheKey, item, { ttl: this.storyTTL });
+      return item;
+    } catch (error) {
+      console.error(`Failed to fetch story ${id}:`, error);
+      return null;
+    }
+  }
+
+  private isValidStory(item: any): item is Story {
+    return (
+      item &&
+      typeof item.id === 'number' &&
+      typeof item.title === 'string' &&
+      typeof item.by === 'string' &&
+      typeof item.time === 'number' &&
+      (item.type === 'story' || item.type === 'job')
+    );
   }
 
   clearCache(): void {
@@ -103,23 +133,22 @@ class HackerNewsAPI {
   }
 
   async searchStories(query: string): Promise<Story[]> {
-    const cacheKey = `search_${query}`;
-    const cachedResults = this.cache.get<Story[]>(cacheKey);
+    const cacheKey = `search_${query.toLowerCase().trim()}`;
     
-    if (cachedResults) {
-      return cachedResults;
-    }
-
     try {
+      const cachedResults = this.cache.get<Story[]>(cacheKey);
+      if (cachedResults) {
+        return cachedResults;
+      }
+
       const searchResult = await this.fetchWithRetry(() =>
         this.algoliaClient.get<SearchResult>(`/search?query=${encodeURIComponent(query)}`)
       );
 
-      if (!searchResult || !searchResult.hits) {
-        throw new Error('No search results available');
+      if (!searchResult?.hits?.length) {
+        return [];
       }
 
-      // Converter os resultados do Algolia para o formato Story
       const stories: Story[] = searchResult.hits.map(hit => ({
         id: parseInt(hit.objectID),
         title: hit.title,
@@ -131,7 +160,7 @@ class HackerNewsAPI {
         type: 'story'
       }));
 
-      this.cache.set(cacheKey, stories);
+      this.cache.set(cacheKey, stories, { ttl: this.searchTTL });
       return stories;
     } catch (error) {
       console.error('Search failed:', error);

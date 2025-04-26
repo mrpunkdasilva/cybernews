@@ -1,27 +1,38 @@
 import { useState, useEffect } from 'react';
 import { Story } from '@/services/types/HackerNews';
-import { TopService } from '../services/topService';
+import { hackerNewsAPI } from '@/services/hackerNewsAPI';
 
-export function useTopStories() {
+interface TopStoriesHook {
+  stories: Story[];
+  loading: boolean;
+  error: Error | null;
+  refreshStories: () => Promise<void>;
+}
+
+export function useTopStories(): TopStoriesHook {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    async function fetchStories() {
-      try {
-        setLoading(true);
-        const fetchedStories = await TopService.getTopStories(30);
-        setStories(fetchedStories);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch top stories'));
-      } finally {
-        setLoading(false);
-      }
+  const fetchStories = async () => {
+    try {
+      setLoading(true);
+      const fetchedStories = await hackerNewsAPI.getStories('top', 1);
+      setStories(fetchedStories);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch top stories'));
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchStories();
   }, []);
 
-  return { stories, loading, error };
+  const refreshStories = async () => {
+    await fetchStories();
+  };
+
+  return { stories, loading, error, refreshStories };
 }

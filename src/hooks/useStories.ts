@@ -19,7 +19,6 @@ export interface StoriesHook {
   refreshStories: () => Promise<void>;
   loadMore: () => void;
   lastStoryRef: React.RefObject<HTMLDivElement>;
-  fetchStories: (pageNum: number, forceRefresh?: boolean) => Promise<void>;
 }
 
 const INITIAL_STATE: StoriesState = {
@@ -36,7 +35,6 @@ export function useStories(type: StoryType): StoriesHook {
   const [state, setState] = useState<StoriesState>(INITIAL_STATE);
   const [page, setPage] = useState(1);
   const lastStoryRef = useRef<HTMLDivElement>(null);
-  const retryCount = useRef(0);
 
   const fetchStories = useCallback(async (pageNum: number, forceRefresh: boolean = false) => {
     try {
@@ -46,7 +44,7 @@ export function useStories(type: StoryType): StoriesHook {
         hackerNewsAPI.clearCache();
       }
       
-      const fetchedStories = await hackerNewsAPI.getStories(type, pageNum, PAGE_SIZE);
+      const fetchedStories = await hackerNewsAPI.getStories(type, pageNum);
       
       setState(prev => ({
         ...prev,
@@ -73,8 +71,7 @@ export function useStories(type: StoryType): StoriesHook {
     setPage(prev => prev + 1);
   }, [state.hasMore, state.isLoadingMore]);
 
-  const refreshStories = useCallback(() => {
-    retryCount.current += 1;
+  const refreshStories = useCallback(async () => {
     setPage(1);
     return fetchStories(1, true);
   }, [fetchStories]);
@@ -84,10 +81,13 @@ export function useStories(type: StoryType): StoriesHook {
   }, [fetchStories, page]);
 
   return {
-    ...state,
+    stories: state.stories,
+    loading: state.loading,
+    error: state.error,
+    hasMore: state.hasMore,
+    isLoadingMore: state.isLoadingMore,
     refreshStories,
     loadMore,
-    lastStoryRef,
-    fetchStories,
+    lastStoryRef
   };
 }

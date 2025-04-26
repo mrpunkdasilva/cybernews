@@ -21,7 +21,8 @@ export default function HomePage() {
     hasMore, 
     isLoadingMore, 
     lastStoryRef,
-    refreshStories
+    refreshStories,
+    loadMore 
   } = useStories('top');
 
   useEffect(() => {
