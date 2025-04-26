@@ -161,15 +161,13 @@
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 10px var(--neon-cyan),
-                 0 0 20px var(--neon-cyan),
-                 0 0 30px var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 245, 0.3),
+                 0 0 20px rgba(0, 255, 245, 0.2);
   }
 
   .text-glow-pink {
-    text-shadow: 0 0 10px var(--neon-pink),
-                 0 0 20px var(--neon-pink),
-                 0 0 30px var(--neon-pink);
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.3),
+                 0 0 20px rgba(255, 0, 255, 0.2);
   }
 
   .grid-bg {
@@ -204,15 +202,13 @@
   }
 
   .cyber-glow {
-    box-shadow: 0 0 10px rgba(0, 255, 245, 0.3),
-                0 0 20px rgba(0, 255, 245, 0.2),
-                0 0 30px rgba(0, 255, 245, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 245, 0.15),
+                0 0 20px rgba(0, 255, 245, 0.1);
   }
 
   .cyber-text-glow {
-    text-shadow: 0 0 10px rgba(0, 255, 245, 0.5),
-                 0 0 20px rgba(0, 255, 245, 0.3),
-                 0 0 30px rgba(0, 255, 245, 0.2);
+    text-shadow: 0 0 10px rgba(0, 255, 245, 0.3),
+                 0 0 20px rgba(0, 255, 245, 0.2);
   }
 
   .scrollbar-cyber {
@@ -222,6 +218,42 @@
 
   .scrollbar-cyber::-webkit-scrollbar-track {
     animation: scrollPulse 4s ease infinite;
+  }
+
+  .cyber-grid-bg {
+    background-image: 
+      linear-gradient(to right, rgba(0,255,245,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,255,245,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    transform: perspective(500px) rotateX(60deg) translateY(-50px);
+    animation: grid-flow 20s linear infinite;
+  }
+
+  @keyframes grid-flow {
+    0% {
+      transform: perspective(500px) rotateX(60deg) translateY(-50px);
+    }
+    100% {
+      transform: perspective(500px) rotateX(60deg) translateY(0px);
+    }
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  @keyframes flicker {
+    0% { opacity: 0.02; }
+    5% { opacity: 0.04; }
+    10% { opacity: 0.02; }
+    15% { opacity: 0.04; }
+    20% { opacity: 0.02; }
+    25% { opacity: 0.04; }
+    30% { opacity: 0.02; }
+  }
+
+  .animate-flicker {
+    animation: flicker 0.5s infinite;
   }
 }
 
@@ -257,27 +289,18 @@
   background-size: 200% auto;
 }
 
-/* Adicione isso ao seu globals.css */
-.bg-cyber-pattern {
+/* Minimal grayscale background effects */
+.bg-minimal-pattern {
   background-image: 
-    linear-gradient(to bottom, rgba(0,255,245,0.1) 1px, transparent 1px),
-    linear-gradient(to right, rgba(0,255,245,0.1) 1px, transparent 1px);
+    linear-gradient(to bottom, rgba(128,128,128,0.01) 1px, transparent 1px),
+    linear-gradient(to right, rgba(128,128,128,0.01) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
-.bg-scanline {
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 255, 245, 0.05) 0.5%,
-    transparent 1%
-  );
-}
-
-.cyber-grid-background {
+.minimal-grid {
   background: 
-    linear-gradient(90deg, rgba(0,255,245,0.05) 1px, transparent 1px),
-    linear-gradient(rgba(0,255,245,0.05) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(128,128,128,0.01) 1px, transparent 1px),
+    linear-gradient(rgba(128,128,128,0.01) 1px, transparent 1px);
   background-size: 50px 50px;
   transform: perspective(500px) rotateX(60deg);
   position: absolute;
@@ -285,6 +308,7 @@
   height: 400%;
   top: -150%;
   left: -150%;
+  opacity: 0.01;
 }
 
 @keyframes float {
@@ -294,4 +318,124 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* CRT e Terminal Effects */
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.95; }
+  5% { opacity: 0.90; }
+  10% { opacity: 0.95; }
+  15% { opacity: 0.90; }
+  20% { opacity: 0.95; }
+  100% { opacity: 0.95; }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-text {
+  font-family: var(--font-share-tech-mono);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.terminal-window {
+  @apply relative bg-cyber-black/90 border border-cyber-neon/30 rounded-lg p-4 overflow-hidden;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 245, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.terminal-header {
+  @apply flex items-center gap-2 mb-4 pb-2 border-b border-cyber-neon/20;
+}
+
+.terminal-dot {
+  @apply w-3 h-3 rounded-full;
+}
+
+.animate-typing {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: 
+    typing 3.5s steps(40, end),
+    blink .75s step-end infinite;
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+.animate-crt-flicker {
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Glitch Effect */
+@keyframes glitch {
+  0% {
+    clip-path: inset(50% 0 30% 0);
+    transform: translate(-5px, 5px);
+  }
+  20% {
+    clip-path: inset(15% 0 65% 0);
+    transform: translate(5px, -5px);
+  }
+  40% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(5px, 5px);
+  }
+  60% {
+    clip-path: inset(40% 0 43% 0);
+    transform: translate(-5px, -5px);
+  }
+  80% {
+    clip-path: inset(5% 0 85% 0);
+    transform: translate(5px, 5px);
+  }
+  100% {
+    clip-path: inset(60% 0 25% 0);
+    transform: translate(-5px, -5px);
+  }
+}
+
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff00ff;
+  animation: glitch 0.75s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: 2px 0 #00fff5;
+  animation: glitch 0.75s infinite linear alternate;
 }

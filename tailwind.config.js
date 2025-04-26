@@ -25,6 +25,8 @@ module.exports = {
         }
       },
       backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))',
         'cyber-city': "linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)), url('/images/cyber-city.jpg')",
         'cyber-pattern': `
           linear-gradient(rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9)),
@@ -50,8 +52,10 @@ module.exports = {
           linear-gradient(to right, var(--cyber-grid) 1px, transparent 1px),
           linear-gradient(to bottom, var(--cyber-grid) 1px, transparent 1px)
         `,
-        'cyber-gradient': 'linear-gradient(45deg, var(--cyber-dark) 0%, var(--cyber-black) 100%)',
+        'cyber-gradient': 'linear-gradient(135deg, rgba(0,255,245,0.1) 0%, rgba(255,0,255,0.1) 100%)',
+        'vignette': 'radial-gradient(circle at center, transparent 0%, rgba(10,10,10,0.8) 100%)',
         'scanline': 'repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0px, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 2px)',
+        'radial-gradient': 'radial-gradient(circle at center, transparent 0%, rgba(10,10,10,0.8) 100%)',
       },
       animation: {
         'text-gradient': 'text-gradient 3s ease infinite',
