@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useStories } from '@/hooks/useStories';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TerminalWindow } from '@/components/terminal/TerminalWindow';
@@ -11,29 +11,34 @@ import { SearchBar } from '@/components/search/SearchBar';
 import type { Story } from '@/services/hackerNewsAPI';
 
 export default function HomePage() {
-  const { stories, loading, error, loadMore } = useStories('top');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { 
+    stories, 
+    loading, 
+    error, 
+    hasMore, 
+    isLoadingMore, 
+    lastStoryRef,
+    fetchStories 
+  } = useStories('top');
 
-  const handleSearchResultSelect = (story: Story) => {
-    // Se a história tem uma URL externa, abrimos em nova aba
-    if (story.url) {
-      window.open(story.url, '_blank', 'noopener,noreferrer');
-    }
-    // A navegação interna é tratada pelo Link component
-  };
-
-  // Pull-to-refresh functionality
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    // Simulating refresh - you'll need to implement actual refresh logic
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    window.location.reload();
-  };
+    try {
+      await fetchStories(1, true); // true para forçar refresh
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchStories]);
+
+  const handleSearchResultSelect = useCallback((story: Story) => {
+    // Opcional: adicionar lógica adicional ao selecionar um resultado
+    console.log('Selected story:', story);
+  }, []);
 
   return (
     <MainLayout>
-      <CRTEffect />
-      <div className="space-y-8 max-w-4xl mx-auto px-4">
+      <div className="space-y-6">
         {/* Terminal-style Header */}
         <motion.div 
           className="terminal-window p-4 border border-cyber-neon/30 bg-cyber-black/80"
@@ -100,63 +105,62 @@ export default function HomePage() {
           )}
 
           <div className="space-y-4">
-            {loading ? (
-              [...Array(5)].map((_, i) => (
-                <motion.div 
-                  key={i} 
-                  className="h-20 bg-cyber-neon/5 animate-pulse rounded"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                />
-              ))
-            ) : (
-              stories.map((story) => (
-                <motion.article
-                  key={story.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="terminal-text group hover:bg-cyber-neon/5 p-4 border border-transparent hover:border-cyber-neon/30 transition-all"
-                >
-                  <div className="flex items-start">
-                    <span className="text-cyber-pink mr-2">&gt;</span>
-                    <div>
-                      <Link 
-                        href={`/show/${story.id}`}
-                        className="block group-hover:text-cyber-pink transition-colors"
-                      >
-                        {story.title}
-                      </Link>
-                      <div className="text-sm text-cyber-neon/50 flex items-center space-x-4">
-                        <span>{story.score} points</span>
-                        <span>by {story.by}</span>
-                        <span>{story.descendants} comments</span>
-                        {story.url && (
-                          <a 
-                            href={story.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-cyber-pink hover:underline"
-                          >
-                            Visit Link
-                          </a>
-                        )}
-                      </div>
+            {stories.map((story, index) => (
+              <motion.article
+                key={story.id}
+                ref={index === stories.length - 1 ? lastStoryRef : null}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="terminal-text group hover:bg-cyber-neon/5 p-4 border border-transparent hover:border-cyber-neon/30 transition-all"
+              >
+                <div className="flex items-start">
+                  <span className="text-cyber-pink mr-2">&gt;</span>
+                  <div>
+                    <Link 
+                      href={`/show/${story.id}`}
+                      className="block group-hover:text-cyber-pink transition-colors"
+                    >
+                      {story.title}
+                    </Link>
+                    <div className="text-sm text-cyber-neon/50 flex items-center space-x-4">
+                      <span>{story.score} points</span>
+                      <span>by {story.by}</span>
+                      <span>{story.descendants} comments</span>
+                      {story.url && (
+                        <a 
+                          href={story.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-cyber-pink hover:underline"
+                        >
+                          Visit Link
+                        </a>
+                      )}
                     </div>
                   </div>
-                </motion.article>
-              ))
+                </div>
+              </motion.article>
+            ))}
+            
+            {isLoadingMore && (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="h-20 bg-cyber-neon/5 animate-pulse rounded"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  />
+                ))}
+              </div>
+            )}
+            
+            {!hasMore && (
+              <div className="text-center text-cyber-neon/50 py-4">
+                No more stories to load
+              </div>
             )}
           </div>
-
-          <motion.button
-            className="mt-8 w-full terminal-text border border-cyber-neon/30 p-2 hover:bg-cyber-neon/10 transition-all"
-            onClick={loadMore}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            &gt; LOAD_MORE.exe
-          </motion.button>
         </TerminalWindow>
 
         {/* Terminal Footer */}
