@@ -62,7 +62,10 @@ class HackerNewsAPI {
     try {
       const cachedStories = this.cache.get<Story[]>(cacheKey);
       if (cachedStories) {
-        return cachedStories;
+        return cachedStories.map(story => ({
+          ...story,
+          type: story.type || 'story'
+        }));
       }
 
       const storyIds = await this.fetchWithRetry(() => 

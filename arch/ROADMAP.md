@@ -24,6 +24,20 @@
   - Add typing animations
   - Ensure effects are mobile-friendly
 
+- [x] Article List Feature
+  - Create mobile-optimized article cards
+  - Implement infinite scroll for mobile
+  - Add pull-to-refresh functionality
+  - Optimize touch interactions
+  - Add loading skeletons
+
+- [x] Core Pages Implementation
+  - Top stories page with score sorting
+  - Ask HN page with discussions
+  - Consistent cyberpunk styling
+  - Loading and error states
+  - Animated transitions
+
 ### High Priority 🚨
 - [ ] Performance Optimization
   - Implement lazy loading for components
@@ -40,21 +54,13 @@
   - Ensure proper viewport settings
 
 ### In Progress 🔄
-- [ ] Article List Feature
-  - Create mobile-optimized article cards
-  - Implement infinite scroll for mobile
-  - Add pull-to-refresh functionality
-  - Optimize touch interactions
-  - Add loading skeletons
-
-## 📋 Sprint 2: Enhanced User Experience
-### In Progress 🔄
 - [ ] Cache System Enhancement
   - Implement advanced caching strategies
   - Add offline support
   - Optimize cache invalidation
   - Implement background sync
 
+## 📋 Sprint 2: Enhanced User Experience
 ### To Do 📝
 - [ ] Mobile Interaction Design
   - Design touch-based navigation system

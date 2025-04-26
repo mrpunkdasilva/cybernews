@@ -21,9 +21,7 @@ export default function HomePage() {
     hasMore, 
     isLoadingMore, 
     lastStoryRef,
-    refreshStories,
-    fetchStories,
-    loadMore
+    refreshStories
   } = useStories('top');
 
   useEffect(() => {
@@ -83,7 +81,7 @@ export default function HomePage() {
           <LoadingTerminal message="ERROR: SYSTEM MALFUNCTION" />
           <div className="mt-4 text-center">
             <button 
-              onClick={() => refreshStories()} 
+              onClick={refreshStories} 
               className="text-cyber-neon hover:text-cyber-pink transition-colors"
             >
               RETRY_CONNECTION();
