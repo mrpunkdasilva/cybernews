@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Navigation() {
   const [isHackerMode, setIsHackerMode] = useState(false);
@@ -12,7 +13,19 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center space-x-2 group">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="relative w-8 h-8"
+            >
+              <Image
+                src="/favicon.svg"
+                alt="CyberNews Logo"
+                width={32}
+                height={32}
+                className="group-hover:animate-pulse"
+              />
+            </motion.div>
             <motion.span 
               className="text-2xl font-orbitron"
               whileHover={{ scale: 1.05 }}
@@ -23,6 +36,7 @@ export function Navigation() {
 
           {/* Navigation Items */}
           <div className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="nav-link">Home</Link>
             <Link href="/top" className="nav-link">Top</Link>
             <Link href="/new" className="nav-link">New</Link>
             <Link href="/best" className="nav-link">Best</Link>
