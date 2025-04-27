@@ -1,3 +1,5 @@
+import { showScrollFeedback } from '@/utils/feedback';
+
 export interface VoiceCommand {
   patterns: {
     [key: string]: RegExp[]; // key é o código do idioma (pt-BR, en-US, etc)
@@ -134,40 +136,46 @@ export const commands: Record<string, VoiceCommand> = {
         /rolar (para )?cima/i,
         /rolar (para )?baixo/i,
         /subir/i,
-        /descer/i
+        /descer/i,
+        /voltar ao topo/i,
+        /ir para o topo/i
       ],
-      'en-US': [/scroll (up|down)/i],
-      'es-ES': [/desplazar (arriba|abajo)/i],
-      'ja-JP': [/スクロール(上|下)/i]
+      'en-US': [/scroll (up|down|top)/i, /back to top/i],
+      'es-ES': [/desplazar (arriba|abajo|inicio)/i, /volver al inicio/i],
+      'ja-JP': [/スクロール(上|下|トップ)/i]
     },
     action: async (command?: string) => {
-      const isUp = command?.match(/(cima|up|arriba|上|subir)/i) !== null;
-      const direction = isUp ? 'up' : 'down';
+      if (!command) return;
       
-      // Scroll direto
-      window.scrollBy({
-        top: direction === 'up' ? -500 : 500,
-        behavior: 'smooth'
-      });
+      // Primeiro verifica se é comando de topo
+      if (/(topo|top|inicio|トップ)/i.test(command)) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        showScrollFeedback('⬆️ Voltando ao topo');
+        return;
+      }
 
-      // Feedback visual
-      const feedback = document.createElement('div');
-      feedback.style.cssText = `
-        position: fixed;
-        right: 20px;
-        top: 50%;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        z-index: 9999;
-        transform: translateY(-50%);
-      `;
-      feedback.textContent = isUp ? '⬆️ Rolando para cima' : '⬇️ Rolando para baixo';
-      document.body.appendChild(feedback);
-      setTimeout(() => feedback.remove(), 1000);
+      // Depois verifica a direção (cima/baixo)
+      const upPatterns = /(cima|up|arriba|上|subir)/i;
+      const downPatterns = /(baixo|down|abajo|下|descer)/i;
+
+      if (upPatterns.test(command)) {
+        window.scrollBy({
+          top: -500,
+          behavior: 'smooth'
+        });
+        showScrollFeedback('⬆️ Rolando para cima');
+      } else if (downPatterns.test(command)) {
+        window.scrollBy({
+          top: 500,
+          behavior: 'smooth'
+        });
+        showScrollFeedback('⬇️ Rolando para baixo');
+      }
     },
-    description: 'Rolar página',
+    description: 'Rolar página (cima/baixo/topo)',
     icon: '⬆️'
   },
 

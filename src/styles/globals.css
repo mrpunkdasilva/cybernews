@@ -171,20 +171,27 @@ kbd {
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    transform: translateY(-50%) scale(0.8);
+    transform: translateY(-50%) scale(0.9);
   }
-  20% {
+  15% {
     opacity: 1;
     transform: translateY(-50%) scale(1);
   }
-  80% {
+  85% {
     opacity: 1;
     transform: translateY(-50%) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-50%) scale(0.8);
+    transform: translateY(-50%) scale(0.9);
   }
+}
+
+.scroll-feedback {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
 }
 
 /* Smooth Scroll Behavior */

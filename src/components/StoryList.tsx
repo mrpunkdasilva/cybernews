@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useScroll } from '@/hooks/useScroll';
 import { Story } from '@/shared/types/story';
 import { StoryItem } from '@/components/features/StoryList/StoryItem';
 
 export function StoryList({ stories }: { stories: Story[] }) {
-  const { scrollTo, isAtTop, isAtBottom } = useScroll();  // Removemos o containerRef aqui
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollTo, isAtTop, isAtBottom } = useScroll();
 
   useEffect(() => {
     const handleVoiceScroll = (event: CustomEvent<{ direction: 'up' | 'down' }>) => {
@@ -22,8 +23,12 @@ export function StoryList({ stories }: { stories: Story[] }) {
 
   return (
     <div className="stories-container">
-      {stories.map((story) => (
-        <StoryItem key={story.id} story={story} />
+      {stories.map((story, index) => (
+        <StoryItem 
+          key={story.id} 
+          story={story} 
+          index={index + 1}
+        />
       ))}
     </div>
   );
