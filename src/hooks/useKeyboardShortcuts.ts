@@ -1,5 +1,4 @@
 import { useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface KeyboardShortcutsProps {
   onHackerMode: () => void;

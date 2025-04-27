@@ -1,4 +1,4 @@
-import { CacheStrategy, CacheOptions } from './CacheStrategy';
+import { CacheStrategy } from './CacheStrategy';
 
 export class CompositeCache implements CacheStrategy {
   private strategies: CacheStrategy[];

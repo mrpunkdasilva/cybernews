@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { KeyboardShortcuts } from '@/components/common/KeyboardShortcuts';
 
@@ -10,24 +9,19 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [searchFocused, setSearchFocused] = useState(false);
 
   const handleHackerMode = useCallback(() => {
-    console.log('Toggling hacker mode'); // Debug
     setIsHackerMode(prev => !prev);
   }, []);
 
   const handleSearch = useCallback(() => {
-    const searchInput = document.querySelector('#search-input') as HTMLInputElement;
-    if (searchInput) {
-      searchInput.focus();
-      setSearchFocused(true);
-    }
+    setSearchFocused(true);
   }, []);
 
   const handleNextArticle = useCallback(() => {
-    // Implementar navegação para o próximo artigo
+    // Implementação do próximo artigo
   }, []);
 
   const handlePrevArticle = useCallback(() => {
-    // Implementar navegação para o artigo anterior
+    // Implementação do artigo anterior
   }, []);
 
   const handleEscape = useCallback(() => {
@@ -53,7 +47,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     <div className={`app-container ${isHackerMode ? 'hacker-mode' : ''}`}>
       {children}
       <KeyboardShortcuts />
-      {/* Indicador visual do modo hacker */}
       {isHackerMode && (
         <div className="fixed top-2 right-2 px-2 py-1 bg-cyber-neon/10 border border-cyber-neon rounded text-cyber-neon">
           HACKER MODE

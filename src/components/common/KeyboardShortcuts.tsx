@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,7 +18,7 @@ export const KeyboardShortcuts = () => {
     <>
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-4 right-4 p-2 bg-cyber-dark border border-cyber-neon rounded-md hover:bg-cyber-neon/10 z-[48]"
+        className="fixed bottom-4 right-4 p-2 bg-cyber-dark border border-cyber-neon rounded-md hover:bg-cyber-neon/10 z-[50]"
       >
         ⌨️ Shortcuts
       </button>
@@ -26,7 +28,7 @@ export const KeyboardShortcuts = () => {
           <>
             {/* Overlay para fechar o modal ao clicar fora */}
             <div 
-              className="fixed inset-0 bg-black/50 z-[49]"
+              className="fixed inset-0 bg-black/50 z-[51]"
               onClick={() => setIsVisible(false)}
             />
             
@@ -34,7 +36,7 @@ export const KeyboardShortcuts = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="fixed bottom-16 right-4 p-4 bg-cyber-dark border border-cyber-neon rounded-md shadow-neon z-[50]"
+              className="fixed bottom-16 right-4 p-4 bg-cyber-dark border border-cyber-neon rounded-md shadow-neon z-[52]"
             >
               <h3 className="text-cyber-neon mb-2">Keyboard Shortcuts</h3>
               <ul className="space-y-2">
