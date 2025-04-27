@@ -39,7 +39,7 @@
   - Optimize bundle size
   - Add code splitting
   - Setup performance monitoring
-  - Implement resource cachins
+  - Implement resource caching
 
 - [ ] Mobile UX Enhancement
   - Add haptic feedback
@@ -57,50 +57,52 @@
   - Add theme switching animation
   - Setup system theme detection
 
-### To Do 📝
-- [ ] Voice Command System
-  - Implement voice recognition
+- [x] Voice Command System
+  - [x] Implement voice recognition
     - Setup Web Speech API integration
     - Add fallback for unsupported browsers
     - Implement continuous listening mode
     - Add voice activation trigger ("Hey Cyber")
     - Handle background noise filtering
 
-  - Add command parser
+  - [x] Add command parser
     - Create command registry system
     - Implement fuzzy matching for commands
     - Add context-aware commands
     - Support command chaining
     - Handle command corrections
 
-  - Create feedback system
+  - [x] Create feedback system
     - Add visual feedback indicators
     - Implement audio confirmation sounds
     - Show command recognition status
     - Display voice-to-text preview
     - Add error recovery suggestions
 
-  - Add multilingual support
+  - [x] Add multilingual support
     - Implement PT-BR commands
     - Add English support
     - Include Spanish recognition
     - Support Japanese (日本語)
     - Add language auto-detection
 
-  - Optimize for mobile use
+  - [x] Optimize for mobile use
     - Implement battery-aware processing
     - Add offline command support
     - Optimize wake word detection
     - Reduce processing overhead
     - Handle interruptions (calls, notifications)
 
-  - Core Commands:
+  - [x] Core Commands:
     - "Buscar [termo]" / "Search [term]"
     - "Próximo artigo" / "Next article"
     - "Voltar" / "Back"
     - "Salvar" / "Save"
     - "Modo noturno" / "Dark mode"
+    - "Rolar para cima/baixo" / "Scroll up/down"
+    - "Voltar ao topo" / "Back to top"
 
+### To Do 📝
 - [ ] Advanced Search
   - Add search suggestions
   - Implement filters
@@ -158,7 +160,7 @@
 
 ## 📈 Progress Tracking
 - Sprint 1: 80% Complete
-- Sprint 2: 30% Complete
+- Sprint 2: 45% Complete
 - Sprint 3: Not Started
 - Sprint 4: Not Started
 
