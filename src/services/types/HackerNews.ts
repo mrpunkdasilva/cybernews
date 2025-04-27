@@ -11,12 +11,40 @@ export interface BaseItem {
   dead?: boolean;
 }
 
-export interface Story extends BaseItem {
+export interface AlgoliaHit {
+  objectID: string;
+  title: string | null;
+  url: string | null;
+  points: number | null;
+  author: string | null;
+  created_at_i: number;
+  num_comments: number | null;
+  story_text?: string | null;
+  comment_text?: string | null;
+  children?: number[];
+}
+
+export interface SearchResult {
+  hits: AlgoliaHit[];
+  nbHits: number;
+  page: number;
+  nbPages: number;
+  hitsPerPage: number;
+}
+
+export interface Story {
+  id: number;
   title: string;
   url?: string;
   text?: string;
   score: number;
+  by: string;
+  time: number;
   descendants: number;
+  type: 'story' | 'job' | 'comment' | 'poll' | 'pollopt';
+  kids?: number[];
+  dead?: boolean;
+  deleted?: boolean;
 }
 
 export interface Comment extends BaseItem {
@@ -43,16 +71,4 @@ export interface Job extends BaseItem {
   url?: string;
   title: string;
   score?: number;
-}
-
-export interface SearchResult {
-  hits: Array<{
-    objectID: string;
-    title: string;
-    url: string;
-    points: number;
-    author: string;
-    created_at_i: number;
-    num_comments: number;
-  }>;
 }

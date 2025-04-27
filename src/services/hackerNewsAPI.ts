@@ -133,7 +133,7 @@ export class HackerNewsAPI {
   }
 
   async searchStories(query: string): Promise<Story[]> {
-    const cacheKey = `search_${query.toLowerCase().trim()}`;
+    const cacheKey = `search_${query}`;
     
     try {
       const cachedResults = this.cache.get<Story[]>(cacheKey);
@@ -151,17 +151,34 @@ export class HackerNewsAPI {
 
       const stories: Story[] = searchResult.hits.map(hit => ({
         id: parseInt(hit.objectID),
-        title: hit.title,
-        url: hit.url,
-        score: hit.points,
-        by: hit.author,
-        time: hit.created_at_i,
-        descendants: hit.num_comments,
-        type: 'story'
+        title: hit.title || 'Untitled',
+        url: hit.url || '',
+        score: hit.points || 0,
+        by: hit.author || 'anonymous',
+        time: hit.created_at_i || Math.floor(Date.now() / 1000),
+        descendants: hit.num_comments || 0,
+        type: 'story',
+        kids: hit.children || [],
+        text: hit.story_text || hit.comment_text || '',
+        dead: false,
+        deleted: false
       }));
 
-      this.cache.set(cacheKey, stories, { ttl: this.searchTTL });
-      return stories;
+      // Filtra histórias inválidas ou deletadas
+      const validStories = stories.filter(story => 
+        story.title && 
+        story.by && 
+        !story.dead && 
+        !story.deleted
+      );
+
+      // Ordena por pontuação
+      const sortedStories = validStories.sort((a, b) => 
+        (b.score || 0) - (a.score || 0)
+      );
+
+      this.cache.set(cacheKey, sortedStories, { ttl: this.searchTTL });
+      return sortedStories;
     } catch (error) {
       console.error('Search failed:', error);
       throw new Error('Failed to perform search');

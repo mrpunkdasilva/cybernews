@@ -22,7 +22,7 @@ export function useVoiceInterface() {
     error,
     startListening,
     stopListening
-  } = useVoiceCommands({ lang });
+  } = useVoiceCommands({ lang }); // Pass the current language
 
   // Debug logs mais detalhados
   useEffect(() => {
@@ -72,31 +72,53 @@ export function useVoiceInterface() {
   useEffect(() => {
     if (!transcript) return;
 
-    // Tenta detectar wake word
-    const isWakeWordDetected = wakeWordDetector.detectWakeWord(transcript, lang);
-    console.log('Wake word detection result:', isWakeWordDetected);
+    console.log('Processando transcrição:', transcript);
 
-    // Se o detector já está ativo ou acabou de detectar wake word
-    if (wakeWordDetector.isActive() || isWakeWordDetected) {
-      // Se acabou de detectar o wake word
-      if (isWakeWordDetected) {
-        console.log('Wake word just detected, activating...');
-        audioFeedback.playSound('activate');
-        return; // Retorna para não processar o próprio wake word como comando
-      }
-
-      // Processa o comando se o detector estiver ativo
-      console.log('Attempting to process command:', transcript);
+    // Primeiro, verifica se já está ativo
+    if (wakeWordDetector.isActive()) {
+      console.log('Detector já ativo, processando como comando:', transcript);
       const commandProcessed = multilingualCommands.processCommand(transcript);
-      console.log('Command processing result:', commandProcessed);
       
       if (commandProcessed) {
-        console.log('Command executed successfully, deactivating...');
+        console.log('Comando executado com sucesso');
         audioFeedback.playSound('success');
         wakeWordDetector.deactivate();
         stopListening();
+      } else {
+        console.log('Comando não reconhecido');
       }
+      return;
     }
+
+    // Se não está ativo, tenta detectar wake word
+    const { activated, isSearchCommand } = wakeWordDetector.detectWakeWord(transcript, lang);
+    console.log('Resultado da detecção:', { activated, isSearchCommand });
+
+    if (activated) {
+      console.log('Wake word detectada');
+      audioFeedback.playSound('activate');
+      wakeWordDetector.activate();
+
+      if (isSearchCommand) {
+        // Extrai o termo de busca removendo a wake word
+        const searchTerms = ['buscar', 'buscar por', 'procurar', 'procurar por', 'pesquisar', 'pesquisar por'];
+        let searchTerm = transcript.toLowerCase();
+        for (const term of searchTerms) {
+          searchTerm = searchTerm.replace(term, '').trim();
+        }
+        
+        if (searchTerm) {
+          console.log('Executando busca por:', searchTerm);
+          window.dispatchEvent(new CustomEvent('voice-search', { 
+            detail: { searchTerm }
+          }));
+          audioFeedback.playSound('success');
+          wakeWordDetector.deactivate();
+        }
+      }
+      return;
+    }
+
   }, [transcript, lang, stopListening]);
 
   const toggleListening = async () => {

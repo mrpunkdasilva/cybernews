@@ -1,6 +1,6 @@
 interface Command {
   patterns: string[];
-  action: (args?: string) => Promise<void>;
+  action: (args: string | '') => Promise<void>;  // Aceita string ou string vazia
   description: string;
 }
 
@@ -13,7 +13,7 @@ export class CommandProcessor {
         'siguiente',
         '次へ'
       ],
-      action: async () => {
+      action: async (args: string) => {
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'j' }));
       },
       description: 'Navigate to next item'
@@ -28,11 +28,20 @@ export class CommandProcessor {
         'buscar (.*)',
         '検索 (.*)'
       ],
-      action: async (searchTerm: string) => {
-        const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+      action: async (args?: string) => {
+        if (!args) return;
+        
+        // Dispara um evento customizado para integrar melhor com o React
+        window.dispatchEvent(new CustomEvent('voice-search', { 
+          detail: { searchTerm: args }
+        }));
+        
+        // Fallback: tenta atualizar o input diretamente se necessário
+        const searchInput = document.querySelector('input[placeholder="SEARCH_ARTICLES.exe"]') as HTMLInputElement;
         if (searchInput) {
-          searchInput.value = searchTerm;
+          searchInput.value = args;
           searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          searchInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
       },
       description: 'Search for content'
@@ -46,10 +55,11 @@ export class CommandProcessor {
         'テーマ (.*)'
       ],
       action: async (themeName: string) => {
-        // Integração com seu sistema de temas
-        window.dispatchEvent(new CustomEvent('change-theme', { 
-          detail: { theme: themeName.toLowerCase() }
-        }));
+        if (themeName) {
+          window.dispatchEvent(new CustomEvent('change-theme', { 
+            detail: { theme: themeName.toLowerCase() }
+          }));
+        }
       },
       description: 'Change application theme'
     }],
@@ -60,11 +70,10 @@ export class CommandProcessor {
         'guardar',
         '保存'
       ],
-      action: async () => {
+      action: async (args: string) => {
         const activeStory = document.querySelector('.story.active');
         if (activeStory) {
           const storyId = activeStory.getAttribute('data-story-id');
-          // Integração com seu sistema de salvamento
           window.dispatchEvent(new CustomEvent('save-story', { 
             detail: { id: storyId }
           }));
@@ -79,7 +88,7 @@ export class CommandProcessor {
         'leer',
         '読む'
       ],
-      action: async () => {
+      action: async (args: string) => {
         const activeStory = document.querySelector('.story.active');
         if (activeStory) {
           const storyLink = activeStory.querySelector('a[href]') as HTMLAnchorElement;
@@ -97,10 +106,11 @@ export class CommandProcessor {
         'フィルター (.*)'
       ],
       action: async (filter: string) => {
-        // Integração com seu sistema de filtros
-        window.dispatchEvent(new CustomEvent('apply-filter', { 
-          detail: { filter: filter.toLowerCase() }
-        }));
+        if (filter) {
+          window.dispatchEvent(new CustomEvent('apply-filter', { 
+            detail: { filter: filter.toLowerCase() }
+          }));
+        }
       },
       description: 'Filter stories'
     }],
@@ -113,10 +123,11 @@ export class CommandProcessor {
         'モード (.*)'
       ],
       action: async (mode: string) => {
-        // Integração com seus modos (ex: hacker, leitor, etc)
-        window.dispatchEvent(new CustomEvent('change-mode', { 
-          detail: { mode: mode.toLowerCase() }
-        }));
+        if (mode) {
+          window.dispatchEvent(new CustomEvent('change-mode', { 
+            detail: { mode: mode.toLowerCase() }
+          }));
+        }
       },
       description: 'Change application mode'
     }],
@@ -141,7 +152,7 @@ export class CommandProcessor {
         'reload',
         'リロード'
       ],
-      action: async () => {
+      action: async (args: string) => {
         window.dispatchEvent(new CustomEvent('refresh-stories'));
       },
       description: 'Refresh stories'
@@ -154,7 +165,7 @@ export class CommandProcessor {
         'commands',
         'ヘルプ'
       ],
-      action: async () => {
+      action: async (args: string) => {
         window.dispatchEvent(new CustomEvent('show-commands'));
       },
       description: 'Show available commands'
@@ -204,7 +215,40 @@ export class CommandProcessor {
   }
 
   getAvailableCommands(): string[] {
-    return Array.from(this.commands.values()).map(cmd => cmd.description);
+    const commands = Array.from(this.commands.entries()).map(([name, cmd]) => {
+      const examples = cmd.patterns
+        .filter(p => p.includes('(.*)'))[0]
+        ?.replace(/\((.*?)\)/g, '___')
+        .split('___')[0]
+        .trim() || cmd.patterns[0];
+
+      switch (name) {
+        case 'navigation':
+          return '📱 "próxima" ou "next" - Próxima história';
+        case 'search':
+          return '🔍 "buscar [termo]" - Pesquisar histórias';
+        case 'theme':
+          return '🎨 "tema [nome]" - Mudar tema';
+        case 'save':
+          return '💾 "salvar" - Salvar história atual';
+        case 'read':
+          return '📖 "ler" - Abrir história atual';
+        case 'filter':
+          return '🏷️ "filtrar [tipo]" - Filtrar histórias';
+        case 'mode':
+          return '🌓 "modo [tipo]" - Mudar modo de visualização';
+        case 'scroll':
+          return '⬆️ "rolar [direção]" - Rolar página';
+        case 'refresh':
+          return '🔄 "atualizar" - Recarregar histórias';
+        case 'help':
+          return '❓ "ajuda" - Mostrar comandos';
+        default:
+          return `${examples} - ${cmd.description}`;
+      }
+    });
+
+    return commands;
   }
 }
 

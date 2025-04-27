@@ -1,107 +1,67 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { 
-  SpeechRecognition, 
-  SpeechRecognitionErrorEvent 
-} from '@/types/speech-recognition';
+import { voiceCommandProcessor } from '@/services/voice/VoiceCommandProcessor';
 
-interface VoiceCommandOptions {
-  lang?: string;
-  continuous?: boolean;
-  enableWakeWord?: boolean;
-  wakeWord?: string;
+interface VoiceCommandsConfig {
+  lang: string;
 }
 
-interface VoiceCommandState {
-  isListening: boolean;
-  transcript: string;
-  error: string | null;
-  recognition: SpeechRecognition | null;
-}
-
-const defaultOptions: VoiceCommandOptions = {
-  lang: 'pt-BR',
-  continuous: true,
-  enableWakeWord: true,
-  wakeWord: 'hey cyber'
-};
-
-export function useVoiceCommands(options: VoiceCommandOptions = defaultOptions) {
-  const [state, setState] = useState<VoiceCommandState>({
-    isListening: false,
-    transcript: '',
-    error: null,
-    recognition: null
-  });
-
-  const initializeRecognition = useCallback(() => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      setState(prev => ({ ...prev, error: 'Speech recognition not supported' }));
-      return null;
-    }
-
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognitionAPI();
-
-    recognition.continuous = options.continuous ?? true;
-    recognition.interimResults = true;
-    recognition.lang = options.lang ?? 'pt-BR';
-
-    return recognition;
-  }, [options]);
+export function useVoiceCommands({ lang }: VoiceCommandsConfig) {
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const startListening = useCallback(() => {
-    if (!state.recognition) {
-      const recognition = initializeRecognition();
-      if (!recognition) return;
-
-      recognition.onstart = () => {
-        setState(prev => ({ ...prev, isListening: true }));
-      };
-
-      recognition.onend = () => {
-        setState(prev => ({ ...prev, isListening: false }));
-      };
-
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        setState(prev => ({ ...prev, error: event.error }));
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-
-        setState(prev => ({ ...prev, transcript }));
-      };
-
-      setState(prev => ({ ...prev, recognition }));
-      recognition.start();
-    } else {
-      state.recognition.start();
+    if (!('webkitSpeechRecognition' in window)) {
+      setError('Speech recognition not supported');
+      return;
     }
-  }, [state.recognition, initializeRecognition]);
+
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = lang; // Pode ser configurável
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setError(null);
+    };
+
+    recognition.onresult = (event: any) => {
+      const current = event.resultIndex;
+      const transcript = event.results[current][0].transcript;
+      setTranscript(transcript);
+      
+      voiceCommandProcessor.processCommand(transcript).then(wasProcessed => {
+        if (!wasProcessed) {
+          console.log('No command matched:', transcript);
+        }
+      });
+    };
+
+    recognition.onerror = (event: any) => {
+      setError(event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  }, []);
 
   const stopListening = useCallback(() => {
-    if (state.recognition) {
-      state.recognition.stop();
-    }
-  }, [state.recognition]);
-
-  useEffect(() => {
-    return () => {
-      if (state.recognition) {
-        state.recognition.stop();
-      }
-    };
-  }, [state.recognition]);
+    setIsListening(false);
+  }, []);
 
   return {
-    isListening: state.isListening,
-    transcript: state.transcript,
-    error: state.error,
+    isListening,
+    transcript,
+    error,
     startListening,
-    stopListening
+    stopListening,
+    availableCommands: voiceCommandProcessor.getAvailableCommands()
   };
 }

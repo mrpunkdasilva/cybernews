@@ -15,10 +15,19 @@ export class WakeWordDetector {
         'ei ciber',
         'ok ciber',
         'ciber',
-        'hey ciber'
+        'hey ciber',
+        'iniciar',
+        'começar',
+        'assistente',
+        'buscar',           // Adicionando buscar como wake word
+        'buscar por',       // Variação comum
+        'procurar',         // Sinônimo
+        'procurar por',     // Variação comum
+        'pesquisar',        // Sinônimo
+        'pesquisar por'     // Variação comum
       ],
       fuzzyMatch: true,
-      sensitivity: 0.8
+      sensitivity: 0.6  // Reduzindo a sensibilidade para aceitar mais variações
     }],
     ['en-US', {
       phrases: [
@@ -69,24 +78,39 @@ export class WakeWordDetector {
   ) {}
 
   private fuzzyMatch(str1: string, str2: string): number {
-    str1 = str1.toLowerCase();
-    str2 = str2.toLowerCase();
+    // Normaliza as strings removendo acentos e convertendo para minúsculas
+    const normalize = (str: string) => str.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
 
-    if (str1 === str2) return 1;
-    if (str1.includes(str2) || str2.includes(str1)) return 0.9;
+    const normalized1 = normalize(str1);
+    const normalized2 = normalize(str2);
+
+    // Verifica inclusão direta
+    if (normalized1.includes(normalized2) || normalized2.includes(normalized1)) {
+      return 0.9;
+    }
+
+    // Divide em palavras e verifica cada uma
+    const words1 = normalized1.split(/\s+/);
+    const words2 = normalized2.split(/\s+/);
 
     let matches = 0;
-    const words1 = str1.split(' ');
-    const words2 = str2.split(' ');
+    let totalWords = Math.max(words1.length, words2.length);
 
     for (const word1 of words1) {
       for (const word2 of words2) {
-        if (word1 === word2) matches++;
-        else if (this.levenshteinDistance(word1, word2) <= 2) matches += 0.5;
+        if (word1 === word2) {
+          matches += 1;
+        } else if (this.levenshteinDistance(word1, word2) <= 2) {
+          matches += 0.7;
+        } else if (word1.includes(word2) || word2.includes(word1)) {
+          matches += 0.8;
+        }
       }
     }
 
-    return matches / Math.max(words1.length, words2.length);
+    return matches / totalWords;
   }
 
   private levenshteinDistance(str1: string, str2: string): number {
@@ -117,20 +141,14 @@ export class WakeWordDetector {
     return matrix[str1.length][str2.length];
   }
 
-  detectWakeWord(transcript: string, lang: string = 'pt-BR'): boolean {
-    if (!transcript) return false;
-
-    const now = Date.now();
-    if (now - this.lastActivationTime < this.MIN_ACTIVATION_INTERVAL) {
-      console.log('Activation attempted too soon after last activation');
-      return false;
-    }
+  detectWakeWord(transcript: string, lang: string = 'pt-BR'): { activated: boolean; isSearchCommand: boolean } {
+    if (!transcript) return { activated: false, isSearchCommand: false };
 
     const config = this.wakeWords.get(lang) || this.wakeWords.get('en-US')!;
     const normalizedTranscript = transcript.toLowerCase().trim();
 
-    console.log('Checking wake word in transcript:', normalizedTranscript);
-    console.log('Available wake words for', lang, ':', config.phrases);
+    console.log('Transcript recebido:', transcript);
+    console.log('Transcript normalizado:', normalizedTranscript);
 
     for (const phrase of config.phrases) {
       let matched = false;
@@ -138,25 +156,28 @@ export class WakeWordDetector {
 
       if (config.fuzzyMatch) {
         matchScore = this.fuzzyMatch(normalizedTranscript, phrase);
-        matched = matchScore >= (config.sensitivity || 0.8);
+        matched = matchScore >= (config.sensitivity || 0.6);
+        
+        console.log(`Comparando com "${phrase}":`, {
+          matchScore,
+          threshold: config.sensitivity,
+          matched
+        });
       } else {
         matched = normalizedTranscript.includes(phrase.toLowerCase());
       }
 
       if (matched) {
-        console.log('Wake word detected:', phrase, 'with score:', matchScore);
-        
-        if (this.shouldActivate()) {
-          this.activate();
-          return true;
-        } else {
-          console.log('Activation prevented due to rate limiting');
-          return false;
-        }
+        console.log('Wake word detectada:', phrase, 'com score:', matchScore);
+        const isSearchCommand = ['buscar', 'buscar por', 'procurar', 'procurar por', 'pesquisar', 'pesquisar por'].includes(phrase);
+        return { 
+          activated: this.shouldActivate(), 
+          isSearchCommand 
+        };
       }
     }
 
-    return false;
+    return { activated: false, isSearchCommand: false };
   }
 
   private shouldActivate(): boolean {

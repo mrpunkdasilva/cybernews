@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useSearch } from '@/hooks/useSearch';
 import type { Story } from '@/services/types/HackerNews';
 import Link from 'next/link';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 
 interface SearchBarProps {
   onResultSelect?: (story: Story) => void;
@@ -13,6 +13,22 @@ interface SearchBarProps {
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   ({ onResultSelect, onFocus, onBlur }, ref) => {
     const { searchTerm, setSearchTerm, results, isSearching, error } = useSearch();
+
+    useEffect(() => {
+      const handleVoiceSearch = (event: CustomEvent) => {
+        // Apenas processa eventos de pesquisa por voz
+        if (event.type === 'voice-search') {
+          const { searchTerm } = event.detail;
+          setSearchTerm(searchTerm);
+        }
+      };
+
+      window.addEventListener('voice-search', handleVoiceSearch as EventListener);
+      
+      return () => {
+        window.removeEventListener('voice-search', handleVoiceSearch as EventListener);
+      };
+    }, [setSearchTerm]);
 
     const handleResultClick = (story: Story) => {
       if (onResultSelect) {
