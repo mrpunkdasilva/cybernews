@@ -17,6 +17,7 @@
     "framer-motion": "^10.12.16",
     "next": "^13.4.19",
     "next-auth": "^4.24.11",
+    "postcss-nesting": "^13.0.2",
     "prisma": "^6.11.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
