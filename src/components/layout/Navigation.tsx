@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AuthButton from '../auth/AuthButton';
 
 export function Navigation() {
   const [isHackerMode, setIsHackerMode] = useState(false);
@@ -46,12 +47,7 @@ export function Navigation() {
 
           {/* Search and Mode Toggle */}
           <div className="flex items-center space-x-4">
-            <button 
-              className="p-2 hover:text-cyber-pink transition-colors"
-              onClick={() => setIsHackerMode(!isHackerMode)}
-            >
-              {isHackerMode ? '🖥️' : '📱'}
-            </button>
+            <AuthButton />
           </div>
         </div>
       </div>
