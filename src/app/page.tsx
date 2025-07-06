@@ -9,6 +9,7 @@ import { TerminalWindow } from '@/components/terminal/TerminalWindow';
 import { LoadingTerminal } from '@/components/effects/LoadingTerminal';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/SearchBar';
+import { StoryList } from '@/components/features/StoryList/StoryList';
 
 export default function HomePage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -166,43 +167,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="space-y-4">
-            {stories.map((story, index) => (
-              <motion.article
-                key={story.id}
-                ref={index === stories.length - 1 ? lastStoryRef : null}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="terminal-text group hover:bg-cyber-neon/5 p-4 border border-transparent hover:border-cyber-neon/30 transition-all"
-              >
-                <div className="flex items-start">
-                  <span className="text-cyber-pink mr-2">&gt;</span>
-                  <div>
-                    <Link 
-                      href={`/show/${story.id}`}
-                      className="block group-hover:text-cyber-pink transition-colors"
-                    >
-                      {story.title}
-                    </Link>
-                    <div className="text-sm text-cyber-neon/50 flex items-center space-x-4">
-                      <span>{story.score} points</span>
-                      <span>by {story.by}</span>
-                      <span>{story.descendants} comments</span>
-                      {story.url && (
-                        <a 
-                          href={story.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-cyber-pink hover:underline"
-                        >
-                          Visit Link
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.article>
-            ))}
+          <StoryList stories={stories} />
             
             {isLoadingMore && (
               <div className="mt-4">
@@ -215,7 +180,6 @@ export default function HomePage() {
                 No more stories to load
               </div>
             )}
-          </div>
         </TerminalWindow>
 
         {/* Terminal Footer */}

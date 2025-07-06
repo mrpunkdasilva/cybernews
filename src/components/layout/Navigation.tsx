@@ -1,13 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AuthButton from '../auth/AuthButton';
+import { useSession } from 'next-auth/react';
 
 export function Navigation() {
-  const [isHackerMode, setIsHackerMode] = useState(false);
+  const { status } = useSession();
 
   return (
     <nav className="sticky top-0 z-50 bg-cyber-black/80 backdrop-blur-sm border-b border-cyber-neon/20">
@@ -43,9 +43,12 @@ export function Navigation() {
             <Link href="/best" className="nav-link">Best</Link>
             <Link href="/ask" className="nav-link">Ask</Link>
             <Link href="/show" className="nav-link">Show</Link>
+            {status === 'authenticated' && (
+              <Link href="/favorites" className="nav-link text-cyber-pink">Favorites</Link>
+            )}
           </div>
 
-          {/* Search and Mode Toggle */}
+          {/* Auth Button */}
           <div className="flex items-center space-x-4">
             <AuthButton />
           </div>

@@ -3,13 +3,15 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import type { Story } from '@/services/types/HackerNews';
 import { parseUrl } from '@/utils/url';
+import { SaveButton } from './SaveButton';
 
 export interface StoryItemProps {
   story: Story;
   index: number;
+  isSaved: boolean;
 }
 
-export function StoryItem({ story, index }: StoryItemProps) {
+export function StoryItem({ story, index, isSaved }: StoryItemProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -73,6 +75,7 @@ export function StoryItem({ story, index }: StoryItemProps) {
               <span>{story.descendants || 0}</span>
               <span className="text-cyber-neon/50">comments</span>
             </Link>
+            <SaveButton storyId={story.id} isSavedInitially={isSaved} />
           </div>
         </div>
       </div>
