@@ -61,14 +61,12 @@ npm start
   <summary>
     Ver prints
   </summary>
-  
-![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
-![Screenshot 2](.github/Screenshot_25-7-2025_19038_appbitbudget.vercel.app.jpeg)
-![Screenshot 3](.github/Screenshot_25-7-2025_19053_appbitbudget.vercel.app.jpeg)
-![Screenshot 4](.github/Screenshot_25-7-2025_1912_appbitbudget.vercel.app.jpeg)
-![Screenshot 5](.github/Screenshot_25-7-2025_19217_appbitbudget.vercel.app.jpeg)
-![Screenshot 6](.github/Screenshot_25-7-2025_1923_appbitbudget.vercel.app.jpeg)
-![Screenshot 7](.github/Screenshot_25-7-2025_19230_appbitbudget.vercel.app.jpeg)
+
+  ![Screenshot_22-7-2025_233523_cynews vercel app](https://github.com/user-attachments/assets/c67ed861-a5b1-42ea-b017-7570f6d31cbf)
+![Screenshot_22-7-2025_23365_cynews vercel app](https://github.com/user-attachments/assets/2a12827f-1ae2-4841-9d44-29d7b0708b10)
+![Screenshot_22-7-2025_233623_cynews vercel app](https://github.com/user-attachments/assets/e2e4aacd-31c6-4be7-80b4-7415ca14265e)
+![Screenshot_22-7-2025_233637_cynews vercel app](https://github.com/user-attachments/assets/2efb1007-3cd9-400a-a9d6-324efebe6cab)
+
 
 
 </details>
