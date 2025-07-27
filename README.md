@@ -46,12 +46,26 @@ npm start
 - `ESC` - Clear/Exit
 - `Ctrl + H` - Toggle Hacker Mode
 
+
 ### Voice Commands
 - "Search [term]"
 - "Next page"
 - "Previous page"
 - "Open article"
 - "Save article"
+
+### Visuals
+
+<video src=".github/Screencast from 2025-07-26 14-00-47.mp4" controls></video>
+
+![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
+![Screenshot 2](.github/Screenshot_25-7-2025_19038_appbitbudget.vercel.app.jpeg)
+![Screenshot 3](.github/Screenshot_25-7-2025_19053_appbitbudget.vercel.app.jpeg)
+![Screenshot 4](.github/Screenshot_25-7-2025_1912_appbitbudget.vercel.app.jpeg)
+![Screenshot 5](.github/Screenshot_25-7-2025_19217_appbitbudget.vercel.app.jpeg)
+![Screenshot 6](.github/Screenshot_25-7-2025_1923_appbitbudget.vercel.app.jpeg)
+![Screenshot 7](.github/Screenshot_25-7-2025_19230_appbitbudget.vercel.app.jpeg)
+
 
 ## 🛠️ Tech Stack
 
