@@ -58,8 +58,12 @@ npm start
 
 <video src="https://github.com/user-attachments/assets/f1d1cdd9-3279-482d-b1d9-1352b367e1a3" controls></video>
 
+<details>
 
-
+  <summary>
+    Ver prints
+  </summary>
+  
 ![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
 ![Screenshot 2](.github/Screenshot_25-7-2025_19038_appbitbudget.vercel.app.jpeg)
 ![Screenshot 3](.github/Screenshot_25-7-2025_19053_appbitbudget.vercel.app.jpeg)
@@ -67,6 +71,9 @@ npm start
 ![Screenshot 5](.github/Screenshot_25-7-2025_19217_appbitbudget.vercel.app.jpeg)
 ![Screenshot 6](.github/Screenshot_25-7-2025_1923_appbitbudget.vercel.app.jpeg)
 ![Screenshot 7](.github/Screenshot_25-7-2025_19230_appbitbudget.vercel.app.jpeg)
+
+
+</details>
 
 
 ## 🛠️ Tech Stack
