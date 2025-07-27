@@ -56,8 +56,8 @@ npm start
 
 ### Visuals
 
+<video src="https://github.com/user-attachments/assets/f1d1cdd9-3279-482d-b1d9-1352b367e1a3" controls></video>
 
-![](https://github.com/user-attachments/assets/f1d1cdd9-3279-482d-b1d9-1352b367e1a3)
 
 
 ![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
