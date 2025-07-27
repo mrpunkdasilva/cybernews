@@ -56,7 +56,9 @@ npm start
 
 ### Visuals
 
-![](.github/Screencast from 2025-07-26 14-00-47.mp4)
+
+![](https://github.com/user-attachments/assets/f1d1cdd9-3279-482d-b1d9-1352b367e1a3)
+
 
 ![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
 ![Screenshot 2](.github/Screenshot_25-7-2025_19038_appbitbudget.vercel.app.jpeg)
