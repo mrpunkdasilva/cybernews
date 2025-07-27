@@ -56,7 +56,7 @@ npm start
 
 ### Visuals
 
-<video src=".github/Screencast from 2025-07-26 14-00-47.mp4" controls></video>
+![.github/Screencast from 2025-07-26 14-00-47.mp4](.github/Screencast from 2025-07-26 14-00-47.mp4)
 
 ![Screenshot 1](.github/Screenshot_25-7-2025_19012_appbitbudget.vercel.app.jpeg)
 ![Screenshot 2](.github/Screenshot_25-7-2025_19038_appbitbudget.vercel.app.jpeg)
